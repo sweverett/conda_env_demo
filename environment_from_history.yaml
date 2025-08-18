@@ -1,0 +1,8 @@
+name: conda_demo
+channels:
+  - conda-forge
+dependencies:
+  - astropy
+  - matplotlib
+  - numpy
+  - scipy
