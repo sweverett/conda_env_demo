@@ -7,20 +7,32 @@
 - Linux w/ intel chip: `Miniforge3-Linux-x86_64.sh`
 - Get your architecture with `uname -m` on terminal
 3. Download the right installer:
+  
 `curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"`
+
 4. Set a few env variables:
-`> INSTALLER=Miniforge3-<your-OS-arch>.sh`
-`> PREFIX="$HOME/miniforge3-tutorial"`
-5. Run the miniforge3 installer
-`> sh "$INSTALLER" -b -p "$PREFIX"`
+
+`INSTALLER=Miniforge3-<your-OS-arch>.sh`
+`PREFIX="$HOME/miniforge3-tutorial"`
+6. Run the miniforge3 installer
+
+`sh "$INSTALLER" -b -p "$PREFIX"`
+
 - **IMPORTANT**: If you already have an Anaconda or miniforge install and are doing this just for a demo, do not run `conda init`! Don’t want to alter your existing dotfiles.
 - If you do on accident, simply run:
-`> "$PREFIX/bin/conda" init --reverse`
+
+`"$PREFIX/bin/conda" init --reverse`
+
 6. Deactivate any current conda  (if it’s already running in your shell)
+
 `conda deactivate`
-7. Initialize our new miniforge3 installation, not any pre-existing one (won’t affect any dotfiles)
+
+8. Initialize our new miniforge3 installation, not any pre-existing one (won’t affect any dotfiles)
+
 `source "$PREFIX/etc/profile.d/conda.sh"`
-8. Activate conda base env of our new install (just for this shell)
+
+9. Activate conda base env of our new install (just for this shell)
+
 `conda activate`
 
 ## Install conda-lock in your base env
@@ -32,14 +44,16 @@ We will need this later on, and is one of the few packages you will likely want 
 ## Installing a conda env from a YAML file
 
 If you want to inherit the env name from the YAML file:
-`conda create -f {environment_file}.yaml
+
+`conda create -f {environment_file}.yaml`
 
 If you want to give it your own env name:
-`conda create -n {my_env_name} -f {environment_file}.yaml
+
+`conda create -n {my_env_name} -f {environment_file}.yaml`
 
 ## Generating conda env files
 
-The below commands are how to *generate* `conda` env files given an existing env on your machine, not hwo to install one:
+The below commands are how to *generate* `conda` env files given an existing env on your machine, not how to install one:
 
 1. For maximal information (only guaranteed to be buildable on the same system & architecture):
 
@@ -57,4 +71,14 @@ The below commands are how to *generate* `conda` env files given an existing env
    
 `conda env export -f --no-builds --from-history environment_from_history.yaml`
 `conda-lock ...`
+
+## Streamlining the process with a makefile
+
+For your future self, collaborators, and CI testing, it's best to wrap up all of the most important functionality in a `makefile`. See the one in this repo for some simple examples of how to implement this. Some basic commands you can do with it:
+
+1. `make lock`: Will regenerate the lock file for `osx-64`, `osx-arm64`, and `linux-64`, incorporating any updates to the passed environment file (`environment_from_history` in this case, for cross-platform specification).
+2. `make install`: Will create a new environment based on the produced `conda-lock.yml` file, plus a local install of the simple `example_package` python package.
+3. `make clean`: Remove the generated `conda-lock` file
+4. `make test`: Run the unit tests defined in `tests/` (requires the environment to be installed! But it will activate it on its own)
+
 
